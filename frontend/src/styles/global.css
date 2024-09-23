@@ -1,0 +1,34 @@
+html {
+	margin: 0;
+}
+
+body {
+	margin: 0;
+}
+
+.no-caret::after {
+	display: none !important;
+}
+
+.no-color-dropdown-toggle {
+	background: none;
+	/* Remove background color */
+	border: none;
+	/* Remove border */
+	padding: 0;
+	/* Adjust padding */
+	box-shadow: none;
+	/* Remove box shadow */
+	color: inherit;
+	/* Keep the text color as is */
+}
+
+.no-color-dropdown-toggle:focus {
+	outline: none;
+	/* Remove focus outline */
+}
+
+.no-color-dropdown-toggle:hover {
+	background: none;
+	/* Prevent background on hover */
+}
