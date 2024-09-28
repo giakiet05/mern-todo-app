@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { SignUpCredentials } from '../network/userApi';
 import User from '../models/user';
 import * as UserApi from '../network/userApi';
+import { useEffect } from 'react';
 
 interface SignUpModalProps {
 	onDismiss: () => void;
@@ -17,6 +18,7 @@ export default function SignUpModal({
 	const {
 		register,
 		handleSubmit,
+		setFocus,
 		formState: { errors, isSubmitting }
 	} = useForm<SignUpCredentials>();
 
@@ -28,11 +30,14 @@ export default function SignUpModal({
 			alert(error);
 		}
 	}
+	useEffect(() => {
+		setFocus('username');
+	}, [setFocus]);
 
 	return (
 		<Modal show onHide={onDismiss}>
 			<Modal.Header closeButton>
-				<Modal.Title>Sign Up</Modal.Title>
+				<Modal.Title>Sign up</Modal.Title>
 			</Modal.Header>
 			<Modal.Body>
 				<Form onSubmit={handleSubmit(onSubmit)}>

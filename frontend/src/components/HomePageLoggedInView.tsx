@@ -12,6 +12,8 @@ import AddTaskForm from './AddTaskForm';
 import ImportantList from './ImportantList';
 import SearchList from './SearchList';
 import { Spinner } from 'react-bootstrap';
+import { Route, Routes, useNavigate } from 'react-router';
+import NotFoundPage from '../pages/NotFoundPage';
 
 export default function HomePageLoggedInView() {
 	const [lists, setLists] = useState<List[]>([]);
@@ -23,18 +25,21 @@ export default function HomePageLoggedInView() {
 	const [showImportantList, setShowImportantList] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [showLoadingError, setShowLoadingError] = useState(false);
-	const [showSearchList, setShowSearchList] = useState(false);
+
+	const navigate = useNavigate();
+
 	async function loadCurrentList(listId: string) {
 		try {
 			setLoading(true);
 			const list = await ListApi.getList(listId);
+			storeCurrentListId(listId);
 			setCurrentList(list);
 			setShowImportantList(false);
-			setShowSearchList(false);
 			await loadCurrentTasks(listId); // Load tasks immediately after setting the current list
 		} catch (error) {
 			alert(error);
 			console.log(error);
+
 			setShowLoadingError(true);
 		} finally {
 			setLoading(false);
@@ -57,7 +62,6 @@ export default function HomePageLoggedInView() {
 			const importantTasks = await TaskApi.getImportantTasks();
 			setShowImportantList(true);
 			setCurrentList(null);
-			setShowSearchList(false);
 			setCurrentTasks(importantTasks);
 		} catch (error) {
 			alert(error);
@@ -72,7 +76,6 @@ export default function HomePageLoggedInView() {
 		try {
 			setLoading(true);
 			const searchedTasks = await TaskApi.searchTasks(query);
-			setShowSearchList(true);
 			setCurrentList(null);
 			setShowImportantList(false);
 			setCurrentTasks(searchedTasks);
@@ -85,11 +88,34 @@ export default function HomePageLoggedInView() {
 		}
 	}
 
+	function storeCurrentListId(listId: string) {
+		localStorage.setItem('CURRENT_LIST', listId); // Store the list ID as a string
+	}
+
+	function deleteCurrentListId() {
+		localStorage.removeItem('CURRENT_LIST');
+	}
+
+	function getCurrentListId() {
+		const listId = localStorage.getItem('CURRENT_LIST'); // Get the list ID from localStorage
+		return listId ? listId : undefined; // Return the list ID or undefined if it doesn't exist
+	}
+
 	useEffect(() => {
 		async function loadLists() {
 			try {
 				const lists = await ListApi.getLists();
 				setLists(lists);
+
+				// Get the current list ID from local storage
+				const currentListId =
+					getCurrentListId() || (lists.length > 0 ? lists[0]._id : null);
+
+				// Load the current list only if a valid ID is found
+				if (currentListId) {
+					navigate(`/${currentListId}`);
+					await loadCurrentList(currentListId);
+				} else navigate('/');
 			} catch (error) {
 				alert(error);
 				console.log(error);
@@ -101,14 +127,17 @@ export default function HomePageLoggedInView() {
 
 	function handleListClicked(listId: string) {
 		setTaskToEdit(null);
-
+		console.log(currentList?._id);
 		loadCurrentList(listId);
 	}
 
 	async function handleDeleteList(listId: string) {
 		try {
-			await ListApi.deleteList(listId);
 			setLists((prevLists) => prevLists.filter((list) => list._id !== listId));
+			const currentListId = getCurrentListId();
+			if (currentListId === listId) deleteCurrentListId();
+			await ListApi.deleteList(listId);
+			if (listId === currentList?._id) navigate('/');
 		} catch (error) {
 			alert(error);
 			console.log(error);
@@ -267,47 +296,6 @@ export default function HomePageLoggedInView() {
 		}
 	}
 
-	let currentView;
-	if (showImportantList)
-		currentView = (
-			<ImportantList
-				tasks={currentTasks}
-				onChecked={handleChecked}
-				onSwitchIsImportant={handleSwitchIsImportant}
-				onTaskClicked={handleTaskClicked}
-			/>
-		);
-	else if (showSearchList)
-		currentView = (
-			<SearchList
-				tasks={currentTasks}
-				onChecked={handleChecked}
-				onSwitchIsImportant={handleSwitchIsImportant}
-				onTaskClicked={handleTaskClicked}
-			/>
-		);
-	else if (currentList)
-		currentView = (
-			<>
-				<ListContainer
-					list={currentList}
-					tasks={currentTasks}
-					onChecked={handleChecked}
-					onSwitchIsImportant={handleSwitchIsImportant}
-					onTaskClicked={handleTaskClicked}
-					onDeleteListBtnClicked={handleDeleteList}
-					onRenameListBtnClicked={setListToEdit}
-					onCheckAllTasksBtnClicked={handleCheckAllTasks}
-					onDeleteAllTasksBtnClicked={handleDeleteAllTasks}
-				/>
-
-				<AddTaskForm
-					listId={currentList?._id}
-					onTaskCreated={handleTaskCreated}
-				/>
-			</>
-		);
-	else currentView = <WelcomeView />;
 	return (
 		<div className="d-flex" style={{ marginTop: 50, marginBottom: -20 }}>
 			<SideBar
@@ -333,7 +321,58 @@ export default function HomePageLoggedInView() {
 						Something went wrong. Please refresh the page.
 					</p>
 				)}
-				{!loading && !showLoadingError && currentView}
+				{!loading && !showLoadingError && (
+					<Routes>
+						<Route path="/" element={<WelcomeView />} />
+						<Route
+							path="/important"
+							element={
+								<ImportantList
+									tasks={currentTasks}
+									onChecked={handleChecked}
+									onSwitchIsImportant={handleSwitchIsImportant}
+									onTaskClicked={handleTaskClicked}
+								/>
+							}
+						/>
+						<Route
+							path="/search"
+							element={
+								<SearchList
+									tasks={currentTasks}
+									onChecked={handleChecked}
+									onSwitchIsImportant={handleSwitchIsImportant}
+									onTaskClicked={handleTaskClicked}
+								/>
+							}
+						/>
+
+						<Route
+							path={'/:id'}
+							element={
+								<>
+									<ListContainer
+										list={currentList}
+										tasks={currentTasks}
+										onChecked={handleChecked}
+										onSwitchIsImportant={handleSwitchIsImportant}
+										onTaskClicked={handleTaskClicked}
+										onDeleteListBtnClicked={handleDeleteList}
+										onRenameListBtnClicked={setListToEdit}
+										onCheckAllTasksBtnClicked={handleCheckAllTasks}
+										onDeleteAllTasksBtnClicked={handleDeleteAllTasks}
+									/>
+
+									<AddTaskForm
+										listId={currentList?._id}
+										onTaskCreated={handleTaskCreated}
+									/>
+								</>
+							}
+						/>
+						<Route path="*" element={<NotFoundPage />} />
+					</Routes>
+				)}
 			</div>
 
 			{showAddListModal && (
@@ -343,6 +382,7 @@ export default function HomePageLoggedInView() {
 						setShowAddListModal(false);
 						setLists((prev) => [...prev, newList]);
 						loadCurrentList(newList._id);
+						navigate(`/${newList?._id}`);
 					}}
 				/>
 			)}
@@ -359,6 +399,7 @@ export default function HomePageLoggedInView() {
 							)
 						);
 						loadCurrentList(updatedList._id);
+						navigate(`/${updatedList?._id}`);
 					}}
 					listToEdit={listToEdit}
 				/>

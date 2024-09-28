@@ -2,6 +2,7 @@ import { Nav, Navbar } from 'react-bootstrap';
 import User from '../models/user';
 import NavBarLoggedInView from './NavBarLoggedInView';
 import NavBarLoggedOutView from './NavBarLoggedOutView';
+import { Link } from 'react-router-dom';
 
 interface NavBarProps {
 	loggedInUser: User | null;
@@ -18,7 +19,9 @@ export default function NavBar({
 }: NavBarProps) {
 	return (
 		<Navbar bg="primary" data-bs-theme="dark" className="px-5" fixed="top">
-			<Navbar.Brand>MERN TODO APP</Navbar.Brand>
+			<Navbar.Brand as={Link} to="/">
+				MERN TODO APP
+			</Navbar.Brand>
 			<Nav className="ms-auto">
 				{loggedInUser ? (
 					<NavBarLoggedInView

@@ -3,6 +3,8 @@ import { Button, ListGroup, InputGroup, Form } from 'react-bootstrap';
 import List from '../models/list';
 import ListItem from './ListItem';
 import { ChangeEvent, useState } from 'react';
+import ConfirmModal from './ConfirmModal';
+import { Link, useNavigate } from 'react-router-dom';
 interface SideBarProps {
 	lists: List[];
 	currentListId?: string;
@@ -25,19 +27,34 @@ export default function SideBar({
 	onSearch
 }: SideBarProps) {
 	const [query, setQuery] = useState('');
+	const [showModal, setShowModal] = useState(false);
+	const [listToDelete, setListToDelete] = useState<List | null>(null);
+
+	const navigate = useNavigate();
 
 	function handleSearchChange(e: ChangeEvent<HTMLInputElement>) {
 		const newQuery = e.target.value;
 		setQuery(newQuery);
 		onSearch(newQuery);
+		navigate('/search');
 	}
 
+	function handleOpenModal(list: List) {
+		setShowModal(true);
+		setListToDelete(list);
+	}
+
+	function handleDeleteList(listId: string) {
+		onDeleteListBtnClicked(listId);
+		setShowModal(false);
+		setListToDelete(null);
+	}
 	return (
 		<div
 			className="d-flex flex-column"
 			style={{
 				height: '92vh',
-				minWidth: '300px',
+				width: '300px',
 				borderRight: '1px solid #333'
 			}}
 		>
@@ -61,6 +78,8 @@ export default function SideBar({
 			</InputGroup>
 			<ListGroup variant="flush" className="px-4">
 				<ListGroup.Item
+					as={Link}
+					to="/important"
 					action
 					className="d-flex align-items-center"
 					onClick={onImportantListClicked}
@@ -80,7 +99,7 @@ export default function SideBar({
 						key={list._id}
 						list={list}
 						currentListId={currentListId}
-						onDeleteListBtnClicked={onDeleteListBtnClicked}
+						onDeleteListBtnClicked={() => handleOpenModal(list)}
 						onRenameListBtnClicked={onRenameListBtnClicked}
 						onListClicked={onListClicked}
 					/>
@@ -94,6 +113,16 @@ export default function SideBar({
 			>
 				New List
 			</Button>
+
+			{showModal && (
+				<ConfirmModal
+					title={`Delete ${listToDelete?.name} ? `}
+					description={`Are you sure you want to delete the list "${listToDelete?.name}"?`}
+					action="Delete"
+					onDismiss={() => setShowModal(false)}
+					onConfirmed={() => handleDeleteList(listToDelete!._id)}
+				/>
+			)}
 		</div>
 	);
 }

@@ -1,11 +1,12 @@
 import { Dropdown, ListGroup } from 'react-bootstrap';
 import { FaBars, FaEllipsisV } from 'react-icons/fa';
 import List from '../models/list';
+import { Link } from 'react-router-dom';
 
 interface ListItemProps {
 	list: List;
 	currentListId?: string;
-	onDeleteListBtnClicked: (listId: string) => void;
+	onDeleteListBtnClicked: () => void;
 	onRenameListBtnClicked: (list: List) => void;
 	onListClicked: (listId: string) => void;
 }
@@ -19,6 +20,8 @@ export default function ListItem({
 }: ListItemProps) {
 	return (
 		<ListGroup.Item
+			as={Link}
+			to={`/${list._id}`}
 			action
 			className="d-flex align-items-center"
 			onClick={() => onListClicked(list._id)}
@@ -35,7 +38,13 @@ export default function ListItem({
 			<FaBars className="me-2" />
 			{list.name}
 
-			<Dropdown className="ms-auto" onClick={(e) => e.stopPropagation()}>
+			<Dropdown
+				className="ms-auto"
+				onClick={(e) => {
+					e.preventDefault();
+					e.stopPropagation();
+				}}
+			>
 				<Dropdown.Toggle
 					id={`${list._id}-list`}
 					className="no-caret no-color-dropdown-toggle"
@@ -48,10 +57,7 @@ export default function ListItem({
 						Rename list
 					</Dropdown.Item>
 					<Dropdown.Item
-						onClick={(e) => {
-							e.stopPropagation();
-							onDeleteListBtnClicked(list._id);
-						}}
+						onClick={onDeleteListBtnClicked}
 						className="text-danger"
 					>
 						Delete list

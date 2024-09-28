@@ -3,6 +3,9 @@ import { FaBars } from 'react-icons/fa';
 import TaskItem from './TaskItem';
 import List from '../models/list';
 import Task from '../models/task';
+import { useState } from 'react';
+import ConfirmModal from './ConfirmModal';
+
 interface ListContainerProps {
 	list: List | null;
 	tasks: Task[];
@@ -30,6 +33,27 @@ export default function ListContainer({
 	onCheckAllTasksBtnClicked,
 	onDeleteAllTasksBtnClicked
 }: ListContainerProps) {
+	const [modalInfo, setModalInfo] = useState<{
+		type: 'deleteTasks' | 'deleteList' | null;
+		list: List | null;
+	}>({
+		type: null,
+		list: null
+	});
+
+	function handleOpenModal(type: 'deleteTasks' | 'deleteList', list: List) {
+		setModalInfo({ type, list });
+	}
+
+	function handleDeleteAction() {
+		if (modalInfo.type === 'deleteTasks') {
+			onDeleteAllTasksBtnClicked(modalInfo.list!._id);
+		} else if (modalInfo.type === 'deleteList') {
+			onDeleteListBtnClicked(modalInfo.list!._id);
+		}
+		setModalInfo({ type: null, list: null });
+	}
+
 	return (
 		<div className="d-flex flex-column" style={{ height: '83vh' }}>
 			<div className="m-3 d-flex align-items-center">
@@ -53,13 +77,13 @@ export default function ListContainer({
 						</Dropdown.Item>
 						<Dropdown.Item
 							className="text-danger"
-							onClick={() => onDeleteAllTasksBtnClicked(list!._id)}
+							onClick={() => handleOpenModal('deleteTasks', list!)}
 						>
 							Delete all tasks
 						</Dropdown.Item>
 						<Dropdown.Item
 							className="text-danger"
-							onClick={() => onDeleteListBtnClicked(list!._id)}
+							onClick={() => handleOpenModal('deleteList', list!)}
 						>
 							Delete list
 						</Dropdown.Item>
@@ -81,6 +105,24 @@ export default function ListContainer({
 						/>
 					))}
 			</Stack>
+
+			{modalInfo.type && (
+				<ConfirmModal
+					title={
+						modalInfo.type === 'deleteTasks'
+							? `Delete all tasks of "${modalInfo.list?.name}" ?`
+							: `Delete ${modalInfo.list?.name} ?`
+					}
+					description={
+						modalInfo.type === 'deleteTasks'
+							? `Are you sure you want to delete all tasks of the list "${modalInfo.list?.name}"?\nThey will be deleted permanently.`
+							: `Are you sure you want to delete the list "${modalInfo.list?.name}"?\nThis action cannot be undone.`
+					}
+					action="Delete"
+					onDismiss={() => setModalInfo({ type: null, list: null })}
+					onConfirmed={handleDeleteAction}
+				/>
+			)}
 		</div>
 	);
 }

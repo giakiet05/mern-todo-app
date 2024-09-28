@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { ListInput } from '../network/listApi';
 import * as ListApi from '../network/listApi';
 import TextInputField from './form/TextInputField';
+import { useEffect } from 'react';
 interface AddEditListModalProps {
 	onDismiss: () => void;
 	onListSaved: (list: List) => void;
@@ -18,7 +19,8 @@ export default function AddEditListModal({
 	const {
 		register,
 		handleSubmit,
-		formState: { errors, isSubmitting }
+		formState: { errors, isSubmitting },
+		setFocus
 	} = useForm<ListInput>({
 		defaultValues: {
 			name: listToEdit?.name || ''
@@ -36,6 +38,10 @@ export default function AddEditListModal({
 			alert(error);
 		}
 	}
+
+	useEffect(() => {
+		setFocus('name'); // Programmatically focus the "name" field
+	}, [setFocus]);
 
 	return (
 		<Modal show onHide={onDismiss}>

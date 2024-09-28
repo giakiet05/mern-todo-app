@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import * as UserApi from '../network/userApi';
 import { LogInCredentials } from '../network/userApi';
 import User from '../models/user';
+import { useEffect } from 'react';
 interface LogInModalProps {
 	onDismiss: () => void;
 	onLoggedInSuccessfully: (user: User) => void;
@@ -16,6 +17,7 @@ export default function LogInModal({
 	const {
 		register,
 		handleSubmit,
+		setFocus,
 		formState: { errors, isSubmitting }
 	} = useForm<LogInCredentials>();
 
@@ -28,10 +30,14 @@ export default function LogInModal({
 		}
 	}
 
+	useEffect(() => {
+		setFocus('username');
+	}, [setFocus]);
+
 	return (
 		<Modal show onHide={onDismiss}>
 			<Modal.Header closeButton>
-				<Modal.Title>Log In</Modal.Title>
+				<Modal.Title>Log in</Modal.Title>
 			</Modal.Header>
 			<Modal.Body>
 				<Form onSubmit={handleSubmit(onSubmit)}>
