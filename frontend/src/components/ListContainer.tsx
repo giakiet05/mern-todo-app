@@ -5,10 +5,11 @@ import List from '../models/list';
 import Task from '../models/task';
 import { useState } from 'react';
 import ConfirmModal from './ConfirmModal';
-
+import { FilterType } from './HomePageLoggedInView';
 interface ListContainerProps {
 	list: List | null;
 	tasks: Task[];
+	filterType: FilterType;
 	onChecked: (listId: string, taskId: string, checked: boolean) => void;
 	onSwitchIsImportant: (
 		listId: string,
@@ -20,19 +21,34 @@ interface ListContainerProps {
 	onRenameListBtnClicked: (list: List) => void;
 	onDeleteAllTasksBtnClicked: (listId: string) => void;
 	onCheckAllTasksBtnClicked: (listId: string) => void;
+	onFilterClicked: (filterType: FilterType) => void;
 }
 
 export default function ListContainer({
 	list,
 	tasks,
+	filterType,
 	onChecked,
 	onSwitchIsImportant,
 	onTaskClicked,
 	onDeleteListBtnClicked,
 	onRenameListBtnClicked,
 	onCheckAllTasksBtnClicked,
-	onDeleteAllTasksBtnClicked
+	onDeleteAllTasksBtnClicked,
+	onFilterClicked
 }: ListContainerProps) {
+	let filterColor: string;
+	switch (filterType) {
+		case FilterType.All:
+			filterColor = 'primary';
+			break;
+		case FilterType.Completed:
+			filterColor = 'success';
+			break;
+		case FilterType.Incompleted:
+			filterColor = 'secondary';
+	}
+
 	const [modalInfo, setModalInfo] = useState<{
 		type: 'deleteTasks' | 'deleteList' | null;
 		list: List | null;
@@ -56,7 +72,7 @@ export default function ListContainer({
 
 	return (
 		<div className="d-flex flex-column" style={{ height: '83vh' }}>
-			<div className="m-3 d-flex align-items-center">
+			<div className="mt-3 mx-3 d-flex align-items-center">
 				<h1>{list?.name}</h1>
 
 				<Dropdown className="ms-auto">
@@ -90,6 +106,26 @@ export default function ListContainer({
 					</Dropdown.Menu>
 				</Dropdown>
 			</div>
+
+			<Dropdown className="ms-3 mt-0">
+				<Dropdown.Toggle id="filter-dropdown" variant={filterColor} size="sm">
+					{filterType}
+				</Dropdown.Toggle>
+
+				<Dropdown.Menu>
+					<Dropdown.Item onClick={() => onFilterClicked(FilterType.All)}>
+						All
+					</Dropdown.Item>
+					<Dropdown.Item onClick={() => onFilterClicked(FilterType.Completed)}>
+						Completed
+					</Dropdown.Item>
+					<Dropdown.Item
+						onClick={() => onFilterClicked(FilterType.Incompleted)}
+					>
+						Incompleted
+					</Dropdown.Item>
+				</Dropdown.Menu>
+			</Dropdown>
 
 			<Stack className="m-3 overflow-y-auto" gap={3} style={{ height: '67vh' }}>
 				{tasks

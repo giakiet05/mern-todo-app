@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-refresh/only-export-components */
 import ListContainer from './ListContainer';
 import List from '../models/list';
 import SideBar from './SideBar';
@@ -15,10 +17,17 @@ import { Spinner } from 'react-bootstrap';
 import { Route, Routes, useNavigate } from 'react-router';
 import NotFoundPage from '../pages/NotFoundPage';
 
+export enum FilterType {
+	All = 'All',
+	Completed = 'Completed',
+	Incompleted = 'Incompleted'
+}
+
 export default function HomePageLoggedInView() {
 	const [lists, setLists] = useState<List[]>([]);
 	const [currentList, setCurrentList] = useState<List | null>(null);
 	const [currentTasks, setCurrentTasks] = useState<Task[]>([]);
+	const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
 	const [showAddListModal, setShowAddListModal] = useState(false);
 	const [listToEdit, setListToEdit] = useState<List | null>(null);
 	const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
@@ -296,6 +305,22 @@ export default function HomePageLoggedInView() {
 		}
 	}
 
+	function filterTasks(tasks: Task[]) {
+		let filteredTasks: Task[];
+		switch (filterType) {
+			case FilterType.All:
+				filteredTasks = tasks;
+				break;
+			case FilterType.Completed:
+				filteredTasks = tasks.filter((task) => task.checked === true);
+				break;
+			case FilterType.Incompleted:
+				filteredTasks = tasks.filter((task) => task.checked === false);
+				break;
+		}
+		return filteredTasks;
+	}
+
 	return (
 		<div className="d-flex" style={{ marginTop: 50, marginBottom: -20 }}>
 			<SideBar
@@ -353,7 +378,8 @@ export default function HomePageLoggedInView() {
 								<>
 									<ListContainer
 										list={currentList}
-										tasks={currentTasks}
+										tasks={filterTasks(currentTasks)}
+										filterType={filterType}
 										onChecked={handleChecked}
 										onSwitchIsImportant={handleSwitchIsImportant}
 										onTaskClicked={handleTaskClicked}
@@ -361,6 +387,7 @@ export default function HomePageLoggedInView() {
 										onRenameListBtnClicked={setListToEdit}
 										onCheckAllTasksBtnClicked={handleCheckAllTasks}
 										onDeleteAllTasksBtnClicked={handleDeleteAllTasks}
+										onFilterClicked={setFilterType}
 									/>
 
 									<AddTaskForm
