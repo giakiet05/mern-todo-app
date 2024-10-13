@@ -42,3 +42,18 @@ export async function logIn(credentials: LogInCredentials): Promise<User> {
 export async function logOut() {
 	await fetchData('/api/users/logout', { method: 'POST' });
 }
+
+export interface ChangePasswordCredentials {
+	currentPassword: string;
+	newPassword: string;
+}
+
+export async function changePassword(credentials: ChangePasswordCredentials) {
+	await fetchData('/api/users/changepassword', {
+		method: 'PATCH',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(credentials)
+	});
+}

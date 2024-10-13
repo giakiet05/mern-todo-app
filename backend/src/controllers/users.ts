@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import User from '../models/user';
 import createHttpError from 'http-errors';
 import bcrypt from 'bcrypt';
+import assertIsDefined from '../utils/assertIsDefined';
 
 export const getAuthenticatedUser: RequestHandler = async (req, res, next) => {
 	try {
@@ -92,4 +93,42 @@ export const logOut: RequestHandler = (req, res, next) => {
 		if (error) next(error);
 		else res.sendStatus(200);
 	});
+};
+
+interface ChangePasswordBody {
+	currentPassword: string;
+	newPassword: string;
+}
+
+export const changePassword: RequestHandler<
+	unknown,
+	unknown,
+	ChangePasswordBody,
+	unknown
+> = async (req, res, next) => {
+	const authenticatedUserId = req.session.userId;
+	assertIsDefined(authenticatedUserId);
+	const { currentPassword, newPassword } = req.body;
+
+	try {
+		if (!currentPassword || !newPassword)
+			throw createHttpError(400, 'Please fill in all required fields.');
+		const user = await User.findById(authenticatedUserId).select('+password');
+		if (!user) throw createHttpError(404, 'User not found');
+
+		const isPasswordMatched = await bcrypt.compare(
+			currentPassword,
+			user.password
+		);
+
+		if (!isPasswordMatched)
+			throw createHttpError(400, 'Incorrect current password.');
+
+		user.password = await bcrypt.hash(newPassword, 10);
+		await user.save();
+
+		res.status(200).json({ message: 'Updated password successfully' });
+	} catch (error) {
+		next(error);
+	}
 };

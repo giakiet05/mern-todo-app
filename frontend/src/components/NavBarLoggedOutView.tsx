@@ -11,8 +11,8 @@ export default function NavBarLoggedOutView({
 }: NavBarLoggedOutViewProps) {
 	return (
 		<>
-			<Button onClick={onSignUpclicked}>Sign Up</Button>
-			<Button onClick={onLogInClicked}>Log In</Button>
+			<Button onClick={onSignUpclicked}>Sign up</Button>
+			<Button onClick={onLogInClicked}>Log in</Button>
 		</>
 	);
 }

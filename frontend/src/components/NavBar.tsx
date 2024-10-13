@@ -9,17 +9,19 @@ interface NavBarProps {
 	onSignUpClicked: () => void;
 	onLogInClicked: () => void;
 	onLoggedOutSuccessfully: () => void;
+	onChangePasswordClicked: () => void;
 }
 
 export default function NavBar({
 	loggedInUser,
 	onLogInClicked,
 	onLoggedOutSuccessfully,
-	onSignUpClicked
+	onSignUpClicked,
+	onChangePasswordClicked
 }: NavBarProps) {
 	return (
-		<Navbar bg="primary" data-bs-theme="dark" className="px-5" fixed="top">
-			<Navbar.Brand as={Link} to="/">
+		<Navbar bg="primary" className="px-5" fixed="top">
+			<Navbar.Brand as={Link} to="/" className="text-white">
 				MERN TODO APP
 			</Navbar.Brand>
 			<Nav className="ms-auto">
@@ -27,6 +29,7 @@ export default function NavBar({
 					<NavBarLoggedInView
 						user={loggedInUser}
 						onLoggedOutSuccessfully={onLoggedOutSuccessfully}
+						onChangePasswordClicked={onChangePasswordClicked}
 					/>
 				) : (
 					<NavBarLoggedOutView

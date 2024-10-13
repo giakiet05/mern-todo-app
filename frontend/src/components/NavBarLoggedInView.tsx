@@ -1,14 +1,17 @@
-import { Button, Navbar } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 import User from '../models/user';
 import * as UserApi from '../network/userApi';
+import { FaUserCircle } from 'react-icons/fa';
 interface NavBarLoggedInViewProps {
 	user: User;
 	onLoggedOutSuccessfully: () => void;
+	onChangePasswordClicked: () => void;
 }
 
 export default function NavBarLoggedInView({
 	user,
-	onLoggedOutSuccessfully
+	onLoggedOutSuccessfully,
+	onChangePasswordClicked
 }: NavBarLoggedInViewProps) {
 	async function logOut() {
 		try {
@@ -21,8 +24,21 @@ export default function NavBarLoggedInView({
 
 	return (
 		<>
-			<Navbar.Text className="me-2">Signed in as: {user.username}</Navbar.Text>
-			<Button onClick={logOut}>Log out</Button>
+			<Dropdown className="ms-auto">
+				<Dropdown.Toggle id="user-options-dropdown" className="no-caret">
+					<FaUserCircle className="me-2" size={30} />
+					{user.username}
+				</Dropdown.Toggle>
+
+				<Dropdown.Menu variant="light">
+					<Dropdown.Item onClick={onChangePasswordClicked}>
+						Change password
+					</Dropdown.Item>
+					<Dropdown.Item onClick={logOut} className="text-danger">
+						Log out
+					</Dropdown.Item>
+				</Dropdown.Menu>
+			</Dropdown>
 		</>
 	);
 }

@@ -7,12 +7,13 @@ import LogInModal from './components/LogInModal';
 import User from './models/user';
 import * as UserApi from './network/userApi';
 import HomePage from './pages/HomePage';
+import ChangePasswordModal from './components/ChangePasswordModal';
 
 export default function App() {
 	const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
 	const [showSignUpModal, setShowSignUpModal] = useState(false);
 	const [showLogInModal, setShowLogInModal] = useState(false);
-
+	const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 	useEffect(() => {
 		async function getLoggedInUser() {
 			try {
@@ -31,6 +32,7 @@ export default function App() {
 				loggedInUser={loggedInUser}
 				onLogInClicked={() => setShowLogInModal(true)}
 				onSignUpClicked={() => setShowSignUpModal(true)}
+				onChangePasswordClicked={() => setShowChangePasswordModal(true)}
 				onLoggedOutSuccessfully={() => {
 					setLoggedInUser(null);
 				}}
@@ -52,6 +54,14 @@ export default function App() {
 						setLoggedInUser(user);
 						setShowLogInModal(false);
 					}}
+				/>
+			)}
+			{showChangePasswordModal && (
+				<ChangePasswordModal
+					onDismiss={() => setShowChangePasswordModal(false)}
+					onChangedPasswordSuccessfully={() =>
+						setShowChangePasswordModal(false)
+					}
 				/>
 			)}
 		</div>
