@@ -22,7 +22,7 @@ export default function NavBar({
 	return (
 		<Navbar bg="primary" className="px-5" fixed="top">
 			<Navbar.Brand as={Link} to="/" className="text-white">
-				MERN TODO APP
+				TODO LIST
 			</Navbar.Brand>
 			<Nav className="ms-auto">
 				{loggedInUser ? (
