@@ -5,9 +5,11 @@ import ListItem from './ListItem';
 import { ChangeEvent, useState } from 'react';
 import ConfirmModal from './ConfirmModal';
 import { Link, useNavigate } from 'react-router-dom';
+import { ListType } from './HomePageLoggedInView';
 interface SideBarProps {
 	lists: List[];
 	currentListId?: string;
+	setListType: (listType: ListType) => void;
 	onImportantListClicked: () => void;
 	onAddListBtnClicked: () => void;
 	onDeleteListBtnClicked: (listId: string) => void;
@@ -24,19 +26,20 @@ export default function SideBar({
 	onRenameListBtnClicked,
 	onListClicked,
 	onImportantListClicked,
-	onSearch
+	onSearch,
+	setListType
 }: SideBarProps) {
 	const [query, setQuery] = useState('');
 	const [showModal, setShowModal] = useState(false);
 	const [listToDelete, setListToDelete] = useState<List | null>(null);
 
-	const navigate = useNavigate();
+	//const navigate = useNavigate();
 
 	function handleSearchChange(e: ChangeEvent<HTMLInputElement>) {
 		const newQuery = e.target.value;
 		setQuery(newQuery);
 		onSearch(newQuery);
-		navigate('/search');
+		setListType(ListType.search);
 	}
 
 	function handleOpenModal(list: List) {
@@ -78,11 +81,12 @@ export default function SideBar({
 			</InputGroup>
 			<ListGroup variant="flush" className="px-4">
 				<ListGroup.Item
-					as={Link}
-					to="/important"
 					action
 					className="d-flex align-items-center"
-					onClick={onImportantListClicked}
+					onClick={() => {
+						setListType(ListType.important);
+						onImportantListClicked();
+					}}
 				>
 					<FaStar className="me-2" />
 					Important
@@ -98,6 +102,7 @@ export default function SideBar({
 					<ListItem
 						key={list._id}
 						list={list}
+						setListType={setListType}
 						currentListId={currentListId}
 						onDeleteListBtnClicked={() => handleOpenModal(list)}
 						onRenameListBtnClicked={onRenameListBtnClicked}

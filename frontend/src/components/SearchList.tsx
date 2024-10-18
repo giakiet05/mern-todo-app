@@ -12,7 +12,7 @@ interface ImportantListProps {
 	onTaskClicked: (task: Task) => void;
 }
 
-export default function ImportantList({
+export default function SearchList({
 	tasks,
 	onChecked,
 	onSwitchIsImportant,

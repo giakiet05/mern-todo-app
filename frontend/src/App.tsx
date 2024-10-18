@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/global.css';
 import NavBar from './components/NavBar';
@@ -14,17 +15,26 @@ export default function App() {
 	const [showSignUpModal, setShowSignUpModal] = useState(false);
 	const [showLogInModal, setShowLogInModal] = useState(false);
 	const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+	const [errorMessage, setErrorMessage] = useState('');
 	useEffect(() => {
 		async function getLoggedInUser() {
 			try {
 				const user = await UserApi.getLoggedInUser();
 				setLoggedInUser(user);
 			} catch (error) {
-				alert(error);
+				const err = error as Error;
+				setErrorMessage(err.message);
+				alert(errorMessage);
 			}
 		}
 		getLoggedInUser();
 	}, []);
+
+	function extractErrorMessage(error: Error): string {
+		const errorMessage =
+			error.message.split('message: ')[1] || 'An error occurred';
+		return errorMessage;
+	}
 
 	return (
 		<div className="app">
@@ -45,6 +55,9 @@ export default function App() {
 						setLoggedInUser(newUser);
 						setShowSignUpModal(false);
 					}}
+					errorMessage={errorMessage}
+					setErrorMessage={setErrorMessage}
+					extractErrorMessage={extractErrorMessage}
 				/>
 			)}
 			{showLogInModal && (
@@ -54,6 +67,9 @@ export default function App() {
 						setLoggedInUser(user);
 						setShowLogInModal(false);
 					}}
+					errorMessage={errorMessage}
+					setErrorMessage={setErrorMessage}
+					extractErrorMessage={extractErrorMessage}
 				/>
 			)}
 			{showChangePasswordModal && (

@@ -17,8 +17,10 @@ export default function NavBarLoggedInView({
 		try {
 			await UserApi.logOut();
 			onLoggedOutSuccessfully();
+			localStorage.removeItem('CURRENT_LIST');
 		} catch (error) {
 			alert(error);
+			console.log(error);
 		}
 	}
 

@@ -5,11 +5,13 @@ import List from '../models/list';
 import Task from '../models/task';
 import { useState } from 'react';
 import ConfirmModal from './ConfirmModal';
-import { FilterType } from './HomePageLoggedInView';
+import { FilterType, ListType } from './HomePageLoggedInView';
+import AddTaskForm from './AddTaskForm';
 interface ListContainerProps {
 	list: List | null;
 	tasks: Task[];
 	filterType: FilterType;
+	listType: ListType;
 	onChecked: (listId: string, taskId: string, checked: boolean) => void;
 	onSwitchIsImportant: (
 		listId: string,
@@ -22,11 +24,13 @@ interface ListContainerProps {
 	onDeleteAllTasksBtnClicked: (listId: string) => void;
 	onCheckAllTasksBtnClicked: (listId: string) => void;
 	onFilterClicked: (filterType: FilterType) => void;
+	onTaskCreated: (newTask: Task) => void;
 }
 
 export default function ListContainer({
 	list,
 	tasks,
+	listType,
 	filterType,
 	onChecked,
 	onSwitchIsImportant,
@@ -35,7 +39,8 @@ export default function ListContainer({
 	onRenameListBtnClicked,
 	onCheckAllTasksBtnClicked,
 	onDeleteAllTasksBtnClicked,
-	onFilterClicked
+	onFilterClicked,
+	onTaskCreated
 }: ListContainerProps) {
 	let filterColor: string;
 	switch (filterType) {
@@ -70,41 +75,58 @@ export default function ListContainer({
 		setModalInfo({ type: null, list: null });
 	}
 
+	let listTitle: string;
+	switch (listType) {
+		case ListType.normal:
+			listTitle = list?.name ?? '';
+			break;
+		case ListType.important:
+			listTitle = 'Important';
+			break;
+		case ListType.search:
+			listTitle = 'Search List';
+			break;
+	}
+
+	const listOptionsDropdown = (
+		<Dropdown className="ms-auto">
+			<Dropdown.Toggle
+				id="list-options-dropdown"
+				variant="secondary"
+				className="no-caret"
+			>
+				<FaBars />
+			</Dropdown.Toggle>
+
+			<Dropdown.Menu>
+				<Dropdown.Item onClick={() => onRenameListBtnClicked(list!)}>
+					Rename
+				</Dropdown.Item>
+				<Dropdown.Item onClick={() => onCheckAllTasksBtnClicked(list!._id)}>
+					Check all tasks
+				</Dropdown.Item>
+				<Dropdown.Item
+					className="text-danger"
+					onClick={() => handleOpenModal('deleteTasks', list!)}
+				>
+					Delete all tasks
+				</Dropdown.Item>
+				<Dropdown.Item
+					className="text-danger"
+					onClick={() => handleOpenModal('deleteList', list!)}
+				>
+					Delete list
+				</Dropdown.Item>
+			</Dropdown.Menu>
+		</Dropdown>
+	);
+
 	return (
-		<div className="d-flex flex-column" style={{ height: '83vh' }}>
+		<div className="d-flex flex-column" style={{ height: '92vh' }}>
 			<div className="mt-3 mx-3 d-flex align-items-center">
-				<h1>{list?.name}</h1>
+				<h1>{listTitle}</h1>
 
-				<Dropdown className="ms-auto">
-					<Dropdown.Toggle
-						id="list-options-dropdown"
-						variant="secondary"
-						className="no-caret"
-					>
-						<FaBars />
-					</Dropdown.Toggle>
-
-					<Dropdown.Menu>
-						<Dropdown.Item onClick={() => onRenameListBtnClicked(list!)}>
-							Rename
-						</Dropdown.Item>
-						<Dropdown.Item onClick={() => onCheckAllTasksBtnClicked(list!._id)}>
-							Check all tasks
-						</Dropdown.Item>
-						<Dropdown.Item
-							className="text-danger"
-							onClick={() => handleOpenModal('deleteTasks', list!)}
-						>
-							Delete all tasks
-						</Dropdown.Item>
-						<Dropdown.Item
-							className="text-danger"
-							onClick={() => handleOpenModal('deleteList', list!)}
-						>
-							Delete list
-						</Dropdown.Item>
-					</Dropdown.Menu>
-				</Dropdown>
+				{listType === ListType.normal && listOptionsDropdown}
 			</div>
 
 			<Dropdown className="ms-3 mt-0">
@@ -141,6 +163,10 @@ export default function ListContainer({
 						/>
 					))}
 			</Stack>
+
+			{listType === ListType.normal && (
+				<AddTaskForm listId={list?._id} onTaskCreated={onTaskCreated} />
+			)}
 
 			{modalInfo.type && (
 				<ConfirmModal

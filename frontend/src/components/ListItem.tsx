@@ -2,6 +2,7 @@ import { Dropdown, ListGroup } from 'react-bootstrap';
 import { FaBars, FaEllipsisV } from 'react-icons/fa';
 import List from '../models/list';
 import { Link } from 'react-router-dom';
+import { ListType } from './HomePageLoggedInView';
 
 interface ListItemProps {
 	list: List;
@@ -9,6 +10,7 @@ interface ListItemProps {
 	onDeleteListBtnClicked: () => void;
 	onRenameListBtnClicked: (list: List) => void;
 	onListClicked: (listId: string) => void;
+	setListType: (listType: ListType) => void;
 }
 
 export default function ListItem({
@@ -16,7 +18,8 @@ export default function ListItem({
 	currentListId,
 	onDeleteListBtnClicked,
 	onRenameListBtnClicked,
-	onListClicked
+	onListClicked,
+	setListType
 }: ListItemProps) {
 	return (
 		<ListGroup.Item
@@ -24,7 +27,10 @@ export default function ListItem({
 			to={`/${list._id}`}
 			action
 			className="d-flex align-items-center"
-			onClick={() => onListClicked(list._id)}
+			onClick={() => {
+				setListType(ListType.normal);
+				onListClicked(list._id);
+			}}
 			style={
 				currentListId === list._id
 					? {

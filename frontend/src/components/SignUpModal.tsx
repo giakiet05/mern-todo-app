@@ -9,11 +9,17 @@ import { useEffect } from 'react';
 interface SignUpModalProps {
 	onDismiss: () => void;
 	onSignedUpSuccessfully: (user: User) => void;
+	errorMessage: string;
+	setErrorMessage: (message: string) => void;
+	extractErrorMessage: (error: Error) => string;
 }
 
 export default function SignUpModal({
 	onDismiss,
-	onSignedUpSuccessfully
+	onSignedUpSuccessfully,
+	errorMessage,
+	setErrorMessage,
+	extractErrorMessage
 }: SignUpModalProps) {
 	const {
 		register,
@@ -27,12 +33,14 @@ export default function SignUpModal({
 			const newUser = await UserApi.signUp(credentials);
 			onSignedUpSuccessfully(newUser);
 		} catch (error) {
-			alert(error);
+			const message = extractErrorMessage(error as Error);
+			setErrorMessage(message);
 		}
 	}
 	useEffect(() => {
 		setFocus('username');
-	}, [setFocus]);
+		setErrorMessage('');
+	}, [setFocus, setErrorMessage]);
 
 	return (
 		<Modal show onHide={onDismiss}>
@@ -40,6 +48,9 @@ export default function SignUpModal({
 				<Modal.Title>Sign up</Modal.Title>
 			</Modal.Header>
 			<Modal.Body>
+				{errorMessage && (
+					<div className="w-100 text-danger mb-3">{errorMessage}</div>
+				)}
 				<Form onSubmit={handleSubmit(onSubmit)}>
 					<TextInputField
 						name="username"

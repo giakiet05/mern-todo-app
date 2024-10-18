@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form';
 import { TaskInput } from '../network/taskApi';
 import * as TaskApi from '../network/taskApi';
 import Task from '../models/task';
-import { useRef } from 'react';
 interface AdddTaskFormProps {
 	listId?: string;
 	onTaskCreated: (task: Task) => void;
@@ -13,11 +12,10 @@ export default function AddTaskForm({
 	listId,
 	onTaskCreated
 }: AdddTaskFormProps) {
-	const inputRef = useRef<HTMLInputElement | null>(null);
-
 	const {
 		register,
 		handleSubmit,
+		setFocus,
 		setValue,
 		formState: { errors, isSubmitting }
 	} = useForm<TaskInput>();
@@ -26,7 +24,7 @@ export default function AddTaskForm({
 			const newTask = await TaskApi.createTask(listId!, input);
 			onTaskCreated(newTask);
 			setValue('task', '');
-			inputRef.current?.focus();
+			setFocus('task');
 		} catch (error) {
 			alert(error);
 		}
