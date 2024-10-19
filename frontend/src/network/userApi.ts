@@ -10,6 +10,7 @@ export interface SignUpCredentials {
 	username: string;
 	email: string;
 	password: string;
+	passwordConfirmation: string;
 }
 
 export async function signUp(credentials: SignUpCredentials): Promise<User> {
@@ -24,7 +25,7 @@ export async function signUp(credentials: SignUpCredentials): Promise<User> {
 }
 
 export interface LogInCredentials {
-	username: string;
+	email: string;
 	password: string;
 }
 
@@ -49,11 +50,66 @@ export interface ChangePasswordCredentials {
 }
 
 export async function changePassword(credentials: ChangePasswordCredentials) {
-	await fetchData('/api/users/changepassword', {
+	const response = await fetchData('/api/users/change-password', {
 		method: 'PATCH',
 		headers: {
 			'Content-Type': 'application/json'
 		},
 		body: JSON.stringify(credentials)
 	});
+	return response.json();
+}
+
+export interface ResestPasswordBody {
+	email: string;
+	newPassword: string;
+}
+
+export async function resetPassword(credentials: ResestPasswordBody) {
+	const response = await fetchData('/api/users/reset-password', {
+		method: 'PATCH',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(credentials)
+	});
+	return response.json();
+}
+
+export interface VerifyOtpBody {
+	email: string;
+	otp: string;
+}
+
+export async function activateUser(credentials: VerifyOtpBody) {
+	const response = await fetchData('/api/users/activate', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(credentials)
+	});
+	return response.json();
+}
+
+export async function verifyOtpForResetPassword(credentials: VerifyOtpBody) {
+	const response = await fetchData('/api/users/verify-otp-for-reset-password', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(credentials)
+	});
+	return response.json();
+}
+
+export async function sendOtp(email: string) {
+	const response = await fetchData('/api/users/send-otp', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(email)
+	});
+	return response.json();
 }

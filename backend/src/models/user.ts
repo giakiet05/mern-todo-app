@@ -9,12 +9,28 @@ const userSchema = new mongoose.Schema({
 	email: {
 		type: String,
 		required: true,
-		select: false,
 		unique: true
 	},
 	password: {
 		type: String,
 		required: true,
+		select: false
+	},
+	isActivated: {
+		type: Boolean,
+		default: false
+	},
+	otp: {
+		type: String,
+		select: false
+	},
+	otpExpiresAt: {
+		type: Date,
+		select: false
+	},
+	isVerifiedForReset: {
+		type: Boolean,
+		default: false,
 		select: false
 	}
 });

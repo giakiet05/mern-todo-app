@@ -40,7 +40,7 @@ export default function LogInModal({
 	}
 
 	useEffect(() => {
-		setFocus('username');
+		setFocus('email');
 		setErrorMessage('');
 	}, [setFocus, setErrorMessage]);
 
@@ -53,28 +53,28 @@ export default function LogInModal({
 				{errorMessage && (
 					<div className="w-100 text-danger mb-3">{errorMessage}</div>
 				)}
-				<Form onSubmit={handleSubmit(onSubmit)}>
+				<Form noValidate onSubmit={handleSubmit(onSubmit)}>
 					<TextInputField
-						name="username"
-						label="Username"
-						type="text"
-						placeholder="Username"
+						name="email"
+						label="Email"
+						type="email"
+						placeholder="e.g: johndoe123@gmail.com"
 						register={register}
-						registerOptions={{ required: 'Required' }}
-						error={errors.username}
+						registerOptions={{ required: 'An email is required' }}
+						error={errors.email}
 					/>
 
 					<TextInputField
 						name="password"
 						label="Password"
 						type="password"
-						placeholder="Password"
+						placeholder="Your password"
 						register={register}
-						registerOptions={{ required: 'Required' }}
+						registerOptions={{ required: 'A password is required' }}
 						error={errors.password}
 					/>
 					<Button type="submit" className="w-100" disabled={isSubmitting}>
-						Log In
+						Log in
 					</Button>
 				</Form>
 			</Modal.Body>
