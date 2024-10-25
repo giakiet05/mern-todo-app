@@ -269,6 +269,7 @@ export const logOut: RequestHandler = (req, res, next) => {
 interface ChangePasswordBody {
 	currentPassword: string;
 	newPassword: string;
+	passwordConfirmation: string;
 }
 
 export const changePassword: RequestHandler<
@@ -279,10 +280,10 @@ export const changePassword: RequestHandler<
 > = async (req, res, next) => {
 	const authenticatedUserId = req.session.userId;
 	assertIsDefined(authenticatedUserId);
-	const { currentPassword, newPassword } = req.body;
+	const { currentPassword, newPassword, passwordConfirmation } = req.body;
 
 	try {
-		if (!currentPassword || !newPassword)
+		if (!currentPassword || !newPassword || !passwordConfirmation)
 			throw createHttpError(400, {
 				message: 'Please fill in all required fields.',
 				code: ErrorCode.REQUIRED_FIELDS_MISSING
@@ -312,6 +313,12 @@ export const changePassword: RequestHandler<
 				code: ErrorCode.INVALID_PASSWORD
 			});
 
+		if (newPassword !== passwordConfirmation)
+			throw createHttpError(400, {
+				message: 'The password and confirmation password do not match',
+				code: ErrorCode.PASSWORD_MISMATCH
+			});
+
 		user.password = await bcrypt.hash(newPassword, 10);
 		await user.save();
 
@@ -324,6 +331,7 @@ export const changePassword: RequestHandler<
 interface ResetPasswordBody {
 	email: string;
 	newPassword: string;
+	passwordConfirmation: string;
 }
 
 export const resetPassword: RequestHandler<
@@ -332,7 +340,7 @@ export const resetPassword: RequestHandler<
 	ResetPasswordBody,
 	unknown
 > = async (req, res, next) => {
-	const { email, newPassword } = req.body;
+	const { email, newPassword, passwordConfirmation } = req.body;
 	try {
 		if (!email || !newPassword)
 			throw createHttpError(400, {
@@ -360,6 +368,12 @@ export const resetPassword: RequestHandler<
 				message:
 					'Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, one number, and one special character',
 				code: ErrorCode.INVALID_PASSWORD
+			});
+
+		if (newPassword !== passwordConfirmation)
+			throw createHttpError(400, {
+				message: 'The password and confirmation password do not match',
+				code: ErrorCode.PASSWORD_MISMATCH
 			});
 
 		user.password = await bcrypt.hash(newPassword, 10);
