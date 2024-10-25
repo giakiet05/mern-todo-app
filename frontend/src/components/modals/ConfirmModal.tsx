@@ -1,5 +1,5 @@
 import { Button, Modal } from 'react-bootstrap';
-import { BsVariant } from '../../App';
+import { BsVariant } from '../../types/enums';
 
 interface ConfirmModalProps {
 	title: string;

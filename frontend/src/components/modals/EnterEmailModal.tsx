@@ -52,7 +52,7 @@ export default function EnterEmailModal({
 				{errorMessage && (
 					<div className="w-100 text-danger mb-3">{errorMessage}</div>
 				)}
-				<Form onSubmit={handleSubmit(onSubmit)}>
+				<Form noValidate onSubmit={handleSubmit(onSubmit)}>
 					<TextInputField
 						type="email"
 						name="email"

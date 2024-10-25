@@ -49,7 +49,7 @@ export default function ChangePasswordModal({
 				{errorMessage && (
 					<div className="w-100 text-danger mb-3">{errorMessage}</div>
 				)}
-				<Form onSubmit={handleSubmit(onSubmit)}>
+				<Form noValidate onSubmit={handleSubmit(onSubmit)}>
 					<TextInputField
 						name="currentPassword"
 						label="Current password"
