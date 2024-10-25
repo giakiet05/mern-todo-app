@@ -1,16 +1,19 @@
 import { Button, Form, Modal } from 'react-bootstrap';
-import TextInputField from './form/TextInputField';
+import TextInputField from '../form/TextInputField';
 import { useForm } from 'react-hook-form';
-import * as UserApi from '../network/userApi';
-import { LogInCredentials } from '../network/userApi';
-import User from '../models/user';
-import { useEffect } from 'react';
+import * as UserApi from '../../network/userApi';
+import { LogInCredentials } from '../../network/userApi';
+import User from '../../models/user';
+import { useEffect, useState } from 'react';
+import { CustomError } from '../../types/CustomError';
+import { ErrorCode } from '../../types/ErrorCode';
 interface LogInModalProps {
 	onDismiss: () => void;
 	onLoggedInSuccessfully: (user: User) => void;
 	errorMessage: string;
 	setErrorMessage: (message: string) => void;
-	extractErrorMessage: (error: Error) => string;
+	onActivateClicked: (email: string) => void;
+	onForgotPasswordClicked: () => void;
 }
 
 export default function LogInModal({
@@ -18,7 +21,8 @@ export default function LogInModal({
 	onLoggedInSuccessfully,
 	errorMessage,
 	setErrorMessage,
-	extractErrorMessage
+	onForgotPasswordClicked,
+	onActivateClicked
 }: LogInModalProps) {
 	const {
 		register,
@@ -28,13 +32,17 @@ export default function LogInModal({
 		formState: { errors, isSubmitting }
 	} = useForm<LogInCredentials>();
 
+	const [errorCode, setErrorCode] = useState<ErrorCode>();
+	const [email, setEmail] = useState('');
 	async function onSubmit(credentials: LogInCredentials) {
 		try {
 			const loggedInUser = await UserApi.logIn(credentials);
 			onLoggedInSuccessfully(loggedInUser);
 		} catch (error) {
-			const message = extractErrorMessage(error as Error);
-			setErrorMessage(message);
+			const customError = error as CustomError;
+			setErrorMessage(customError.errorMessage);
+			setErrorCode(customError.errorCode as ErrorCode);
+			setEmail(credentials.email);
 			setValue('password', '');
 		}
 	}
@@ -51,8 +59,20 @@ export default function LogInModal({
 			</Modal.Header>
 			<Modal.Body>
 				{errorMessage && (
-					<div className="w-100 text-danger mb-3">{errorMessage}</div>
+					<div className="w-100 text-danger mb-3">
+						{errorMessage}
+						{errorCode === ErrorCode.ACCOUNT_NOT_ACTIVATED && (
+							<a
+								href="#"
+								className="ms-2"
+								onClick={() => onActivateClicked(email)}
+							>
+								Click here to activate
+							</a>
+						)}
+					</div>
 				)}
+
 				<Form noValidate onSubmit={handleSubmit(onSubmit)}>
 					<TextInputField
 						name="email"
@@ -77,6 +97,13 @@ export default function LogInModal({
 						Log in
 					</Button>
 				</Form>
+				<span
+					className="float-end mt-3 me-2 text-primary"
+					style={{ cursor: 'pointer' }}
+					onClick={onForgotPasswordClicked}
+				>
+					Forgot password?
+				</span>
 			</Modal.Body>
 		</Modal>
 	);

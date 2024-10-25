@@ -4,9 +4,10 @@ import TaskItem from './TaskItem';
 import List from '../models/list';
 import Task from '../models/task';
 import { useState } from 'react';
-import ConfirmModal from './ConfirmModal';
+import ConfirmModal from './modals/ConfirmModal';
 import { FilterType, ListType } from './HomePageLoggedInView';
 import AddTaskForm from './AddTaskForm';
+import { BsVariant } from '../types/enums';
 interface ListContainerProps {
 	list: List | null;
 	tasks: Task[];
@@ -180,7 +181,8 @@ export default function ListContainer({
 							? `Are you sure you want to delete all tasks of the list "${modalInfo.list?.name}"?\nThey will be deleted permanently.`
 							: `Are you sure you want to delete the list "${modalInfo.list?.name}"?\nThis action cannot be undone.`
 					}
-					action="Delete"
+					confirmBtnType={BsVariant.danger}
+					confirmBtnContent="Delete"
 					onDismiss={() => setModalInfo({ type: null, list: null })}
 					onConfirmed={handleDeleteAction}
 				/>

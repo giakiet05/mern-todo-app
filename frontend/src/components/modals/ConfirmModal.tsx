@@ -1,9 +1,11 @@
 import { Button, Modal } from 'react-bootstrap';
+import { BsVariant } from '../../App';
 
 interface ConfirmModalProps {
 	title: string;
 	description: string;
-	action: string;
+	confirmBtnContent: string;
+	confirmBtnType: BsVariant;
 	onDismiss: () => void;
 	onConfirmed: () => void;
 }
@@ -13,7 +15,8 @@ export default function ConfirmModal({
 	onDismiss,
 	description,
 	onConfirmed,
-	action
+	confirmBtnContent,
+	confirmBtnType
 }: ConfirmModalProps) {
 	return (
 		<Modal show onHide={() => onDismiss()}>
@@ -25,8 +28,8 @@ export default function ConfirmModal({
 				<Button variant="secondary" onClick={() => onDismiss()}>
 					Cancel
 				</Button>
-				<Button variant="danger" onClick={() => onConfirmed()}>
-					{action}
+				<Button variant={confirmBtnType} onClick={() => onConfirmed()}>
+					{confirmBtnContent}
 				</Button>
 			</Modal.Footer>
 		</Modal>

@@ -1,25 +1,24 @@
 import { Button, Form, Modal } from 'react-bootstrap';
-import TextInputField from './form/TextInputField';
+import TextInputField from '../form/TextInputField';
 import { useForm } from 'react-hook-form';
-import { SignUpCredentials } from '../network/userApi';
-import User from '../models/user';
-import * as UserApi from '../network/userApi';
+import { SignUpCredentials } from '../../network/userApi';
+import User from '../../models/user';
+import * as UserApi from '../../network/userApi';
 import { useEffect } from 'react';
+import { CustomError } from '../../types/CustomError';
 
 interface SignUpModalProps {
 	onDismiss: () => void;
 	onSignedUpSuccessfully: (user: User) => void;
 	errorMessage: string;
 	setErrorMessage: (message: string) => void;
-	extractErrorMessage: (error: Error) => string;
 }
 
 export default function SignUpModal({
 	onDismiss,
 	onSignedUpSuccessfully,
 	errorMessage,
-	setErrorMessage,
-	extractErrorMessage
+	setErrorMessage
 }: SignUpModalProps) {
 	const {
 		register,
@@ -34,8 +33,8 @@ export default function SignUpModal({
 			const newUser = await UserApi.signUp(credentials);
 			onSignedUpSuccessfully(newUser);
 		} catch (error) {
-			const message = extractErrorMessage(error as Error);
-			setErrorMessage(message);
+			const customError = error as CustomError;
+			setErrorMessage(customError.errorMessage);
 		}
 	}
 	useEffect(() => {

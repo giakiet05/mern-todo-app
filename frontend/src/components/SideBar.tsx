@@ -3,9 +3,9 @@ import { Button, ListGroup, InputGroup, Form } from 'react-bootstrap';
 import List from '../models/list';
 import ListItem from './ListItem';
 import { ChangeEvent, useState } from 'react';
-import ConfirmModal from './ConfirmModal';
-import { Link, useNavigate } from 'react-router-dom';
+import ConfirmModal from './modals/ConfirmModal';
 import { ListType } from './HomePageLoggedInView';
+import { BsVariant } from '../types/enums';
 interface SideBarProps {
 	lists: List[];
 	currentListId?: string;
@@ -123,7 +123,8 @@ export default function SideBar({
 				<ConfirmModal
 					title={`Delete ${listToDelete?.name} ? `}
 					description={`Are you sure you want to delete the list "${listToDelete?.name}"?`}
-					action="Delete"
+					confirmBtnContent="Delete"
+					confirmBtnType={BsVariant.danger}
 					onDismiss={() => setShowModal(false)}
 					onConfirmed={() => handleDeleteList(listToDelete!._id)}
 				/>

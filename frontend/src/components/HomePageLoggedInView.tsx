@@ -6,7 +6,7 @@ import SideBar from './SideBar';
 import EditTaskSideBar from './EditTaskSideBar';
 import { useEffect, useState } from 'react';
 import * as ListApi from '../network/listApi';
-import AddEditListModal from './AddEditListModal';
+import AddEditListModal from './modals/AddEditListModal';
 import * as TaskApi from '../network/taskApi';
 import Task from '../models/task';
 import WelcomeView from './WelcomeView';
@@ -146,7 +146,7 @@ export default function HomePageLoggedInView() {
 			const currentListId = getCurrentListId();
 			if (currentListId === listId) deleteCurrentListId();
 			await ListApi.deleteList(listId);
-			// if (listId === currentList?._id) navigate('/');
+			if (listId === currentList?._id) navigate('/');
 		} catch (error) {
 			alert(error);
 			console.log(error);

@@ -1,9 +1,9 @@
 import { Button, Form, Modal } from 'react-bootstrap';
-import List from '../models/list';
+import List from '../../models/list';
 import { useForm } from 'react-hook-form';
-import { ListInput } from '../network/listApi';
-import * as ListApi from '../network/listApi';
-import TextInputField from './form/TextInputField';
+import { ListInput } from '../../network/listApi';
+import * as ListApi from '../../network/listApi';
+import TextInputField from '../form/TextInputField';
 import { useEffect } from 'react';
 interface AddEditListModalProps {
 	onDismiss: () => void;

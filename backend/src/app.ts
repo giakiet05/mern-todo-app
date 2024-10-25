@@ -8,6 +8,8 @@ import UserRouter from './routes/users';
 import ListRouter from './routes/lists';
 import session from 'express-session';
 import { requireAuth } from './middlewares/auth';
+import { ErrorCode } from './types/ErrorCode';
+
 const app = express();
 
 //Middlewares
@@ -45,12 +47,14 @@ app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
 	console.error(error);
 	let errorMessage = 'An unknown error has occured';
 	let status = 500;
+	let errorCode = ErrorCode.SERVER_ERROR;
 
 	if (isHttpError(error)) {
 		status = error.status;
 		errorMessage = error.message;
+		errorCode = error.code || ErrorCode.UNKNOWN_ERROR;
 	}
-	res.status(status).json({ error: errorMessage, status: status });
+	res.status(status).json({ errorMessage, status, errorCode });
 });
 
 export default app;

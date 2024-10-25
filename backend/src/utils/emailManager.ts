@@ -18,7 +18,7 @@ const transporter = nodemailer.createTransport({
 export async function sendOTPEmail(userEmail: string, otp: string) {
 	const text = `Dear user, 
 
-	Thank you for registering with TODOLIST! 
+	Thank you for using TODOLIST! 
 	
 	Your One-Time Password (OTP) is ${otp}. Please enter this code within 10 minutes to complete your account verification.
 	
@@ -29,7 +29,7 @@ export async function sendOTPEmail(userEmail: string, otp: string) {
 
 	const html = `
 			<p>Dear user,</p>
-			<p>Thank you for registering with <strong>TODOLIST</strong>!</p>
+			<p>Thank you for using <strong>TODOLIST</strong>!</p>
 			<p>Your One-Time Password (OTP) is: </p>
 			<h1>${otp}</h1>
 			<p>Please enter this code within the next <strong>10 minutes</strong> to complete your account verification.</p>

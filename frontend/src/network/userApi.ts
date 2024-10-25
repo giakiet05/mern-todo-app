@@ -13,6 +13,18 @@ export interface SignUpCredentials {
 	passwordConfirmation: string;
 }
 
+export async function checkExistingUser(email: string) {
+	const response = await fetchData('/api/users/check-existing-user', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ email })
+	});
+	if (response.status === 200) return true;
+	return false;
+}
+
 export async function signUp(credentials: SignUpCredentials): Promise<User> {
 	const response = await fetchData('/api/users/signup', {
 		method: 'POST',
@@ -47,6 +59,7 @@ export async function logOut() {
 export interface ChangePasswordCredentials {
 	currentPassword: string;
 	newPassword: string;
+	passwordConfirmation: string;
 }
 
 export async function changePassword(credentials: ChangePasswordCredentials) {
@@ -63,6 +76,7 @@ export async function changePassword(credentials: ChangePasswordCredentials) {
 export interface ResestPasswordBody {
 	email: string;
 	newPassword: string;
+	passwordConfirmation: string;
 }
 
 export async function resetPassword(credentials: ResestPasswordBody) {
@@ -89,6 +103,7 @@ export async function activateUser(credentials: VerifyOtpBody) {
 		},
 		body: JSON.stringify(credentials)
 	});
+
 	return response.json();
 }
 
@@ -100,6 +115,7 @@ export async function verifyOtpForResetPassword(credentials: VerifyOtpBody) {
 		},
 		body: JSON.stringify(credentials)
 	});
+
 	return response.json();
 }
 
@@ -109,7 +125,8 @@ export async function sendOtp(email: string) {
 		headers: {
 			'Content-Type': 'application/json'
 		},
-		body: JSON.stringify(email)
+		body: JSON.stringify({ email })
 	});
+
 	return response.json();
 }
