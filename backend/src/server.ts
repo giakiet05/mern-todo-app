@@ -13,3 +13,4 @@ mongoose
 		});
 	})
 	.catch(console.error);
+export default app;
