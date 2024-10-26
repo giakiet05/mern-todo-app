@@ -32,6 +32,12 @@ app.use(
 	})
 );
 
+app.get('/', (req, res) => {
+	res.json({
+		message: 'Hello World'
+	});
+});
+
 //Routers
 app.use('/api/users', UserRouter);
 app.use('/api/lists', requireAuth, ListRouter);
