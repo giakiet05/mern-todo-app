@@ -12,17 +12,18 @@ import { ErrorCode } from './types/ErrorCode';
 import cors from 'cors';
 
 const app = express(); // khai báo app
-
+console.log(process.env.NODE_ENV || 'Không có cái này nha');
 app.use(
 	session({
 		secret: env.SESSION_SECRET,
 		resave: false,
 		saveUninitialized: false,
-		rolling: true,
+		rolling: true, // Đặt lại thời gian hết hạn session mỗi khi có hoạt động
 		cookie: {
 			maxAge: 60 * 60 * 1000, // 1 giờ
-			secure: process.env.NODE_ENV === 'production', // HTTPS yêu cầu
-			sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' // Cross-origin
+			secure: false, // Không bắt buộc HTTPS
+			sameSite: 'lax', // Linh hoạt, hỗ trợ cả frontend và backend
+			httpOnly: true // Cookie chỉ được backend truy cập
 		},
 		store: MongoStore.create({
 			mongoUrl: env.MONGODB_CONNECTION_STRING
