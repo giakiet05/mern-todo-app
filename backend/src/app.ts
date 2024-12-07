@@ -15,6 +15,14 @@ const app = express(); // khai báo app
 console.log(process.env.NODE_ENV || 'Không có cái này nha');
 
 app.use(
+	cors({
+		origin: env.FRONTEND_URL, // Đảm bảo chính xác
+		credentials: true // Cho phép cookies được gửi qua CORS
+	})
+);
+app.set('trust proxy', 1);
+
+app.use(
 	session({
 		secret: env.SESSION_SECRET,
 		resave: false,
@@ -23,8 +31,8 @@ app.use(
 		cookie: {
 			maxAge: 60 * 60 * 1000, // 1 giờ
 			secure: true, // Không bắt buộc HTTPS
-			sameSite: 'lax', // Linh hoạt, hỗ trợ cả frontend và backend
-			httpOnly: true // Cookie chỉ được backend truy cập
+			sameSite: 'none' // Linh hoạt, hỗ trợ cả frontend và backend
+			//httpOnly: true // Cookie chỉ được backend truy cập
 		},
 		store: MongoStore.create({
 			mongoUrl: env.MONGODB_CONNECTION_STRING
@@ -46,13 +54,6 @@ app.use(
 // 		})
 // 	})
 // );
-
-app.use(
-	cors({
-		origin: env.FRONTEND_URL, // Đảm bảo chính xác
-		credentials: true // Cho phép cookies được gửi qua CORS
-	})
-);
 
 //Middlewares
 app.use(morgan('dev'));

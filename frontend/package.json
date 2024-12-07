@@ -2,6 +2,7 @@
 	"name": "frontend",
 	"private": true,
 	"version": "0.0.0",
+	"proxy": "https://mern-todo-app-backend-ta4u.onrender.com",
 	"type": "module",
 	"scripts": {
 		"start": "vite",
