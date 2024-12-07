@@ -17,6 +17,15 @@ export const getAuthenticatedUser: RequestHandler = async (req, res, next) => {
 	}
 };
 
+export const getAllUsers: RequestHandler = async (req, res, next) => {
+	try {
+		const users = await User.find();
+		res.status(200).json(users);
+	} catch (error) {
+		next(error);
+	}
+};
+
 export const checkExistingUser: RequestHandler = async (req, res, next) => {
 	const email: string = req.body.email;
 	try {
