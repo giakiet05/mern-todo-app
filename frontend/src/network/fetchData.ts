@@ -4,7 +4,15 @@ export default async function fetchData(
 	input: RequestInfo,
 	init?: RequestInit
 ) {
-	const response = await fetch(input, init);
+	const baseUrl: string = 'https://mern-todo-app-backend-ta4u.onrender.com'; // Lấy giá trị từ biến môi trường
+	console.log(baseUrl);
+	if (!baseUrl) {
+		throw new Error(
+			'API key (VITE_API_KEY) is not defined in environment variables.'
+		);
+	}
+
+	const response = await fetch(baseUrl + input, init);
 
 	if (response.ok) {
 		return response;
