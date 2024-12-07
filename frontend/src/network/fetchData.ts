@@ -9,7 +9,7 @@ export default async function fetchData(
 	console.log(baseUrl);
 	if (!baseUrl) {
 		throw new Error(
-			'API key (VITE_API_KEY) is not defined in environment variables.'
+			'API url (VITE_API_URL) is not defined in environment variables.'
 		);
 	}
 

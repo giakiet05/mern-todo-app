@@ -4,7 +4,6 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
 	// Load env variables based on `mode` (e.g., 'development' or 'production')
 	const env = loadEnv(mode, process.cwd(), '');
-	console.log(env.VITE_API_URL || 'Không có');
 	return {
 		plugins: [react()],
 		server: {

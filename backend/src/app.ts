@@ -18,12 +18,11 @@ app.use(
 		secret: env.SESSION_SECRET,
 		resave: false,
 		saveUninitialized: false,
-		rolling: true, // Đặt lại thời gian hết hạn session mỗi khi có hoạt động
+		rolling: true,
 		cookie: {
 			maxAge: 60 * 60 * 1000, // 1 giờ
-			secure: process.env.NODE_ENV === 'production', // HTTPS mới cần
-			sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // Bảo mật nhưng linh hoạt
-			httpOnly: true // Cookie chỉ được backend truy cập
+			secure: process.env.NODE_ENV === 'production', // HTTPS yêu cầu
+			sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' // Cross-origin
 		},
 		store: MongoStore.create({
 			mongoUrl: env.MONGODB_CONNECTION_STRING
@@ -31,11 +30,9 @@ app.use(
 	})
 );
 
-const allowedOrigins = [env.FRONTEND_URL];
-
 app.use(
 	cors({
-		origin: allowedOrigins, // Đảm bảo cho phép origin frontend
+		origin: env.FRONTEND_URL, // Đảm bảo chính xác
 		credentials: true // Cho phép cookies được gửi qua CORS
 	})
 );
