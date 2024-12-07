@@ -13,7 +13,7 @@ import cors from 'cors';
 
 const app = express(); // khai báo app
 
-const allowedOrigins = ['http://localhost:5173', env.FRONTEND_URL];
+const allowedOrigins = [env.FRONTEND_URL];
 
 app.use(
 	cors({
