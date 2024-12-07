@@ -114,6 +114,7 @@ export default function HomePageLoggedInView() {
 		async function loadLists() {
 			try {
 				const lists = await ListApi.getLists();
+				console.log(lists);
 				setLists(lists);
 
 				// Get the current list ID from local storage

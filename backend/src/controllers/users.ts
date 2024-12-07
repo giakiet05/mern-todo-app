@@ -261,7 +261,10 @@ export const logIn: RequestHandler<
 					'Your account is not activated. Please check your email to activate your account before logging in',
 				code: ErrorCode.ACCOUNT_NOT_ACTIVATED
 			});
+		console.log('trước khi gán cho session' + user._id);
 		req.session.userId = user._id;
+		console.log('sau khi gán cho session' + req.session.userId);
+
 		res.status(200).json(user);
 	} catch (error) {
 		next(error);

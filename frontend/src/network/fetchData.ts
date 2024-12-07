@@ -4,7 +4,8 @@ export default async function fetchData(
 	input: RequestInfo,
 	init?: RequestInit
 ) {
-	const baseUrl: string = 'https://mern-todo-app-backend-ta4u.onrender.com'; // Lấy giá trị từ biến môi trường
+	const baseUrl: string =
+		import.meta.env.VITE_API_URL || 'http://localhost:5000';
 	console.log(baseUrl);
 	if (!baseUrl) {
 		throw new Error(
@@ -12,7 +13,13 @@ export default async function fetchData(
 		);
 	}
 
-	const response = await fetch(baseUrl + input, init);
+	// Thêm credentials: 'include' vào `init` để gửi cookie
+	const fetchInit: RequestInit = {
+		...init, // Giữ lại các thuộc tính khác của `init`
+		credentials: 'include' // Gửi cookies (session cookies)
+	};
+
+	const response = await fetch(baseUrl + input, fetchInit);
 
 	if (response.ok) {
 		return response;

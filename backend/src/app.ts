@@ -13,21 +13,30 @@ import cors from 'cors';
 
 const app = express(); // khai báo app
 
+app.use(
+	session({
+		secret: env.SESSION_SECRET,
+		resave: false,
+		saveUninitialized: false,
+		rolling: true, // Đặt lại thời gian hết hạn session mỗi khi có hoạt động
+		cookie: {
+			maxAge: 60 * 60 * 1000, // 1 giờ
+			secure: process.env.NODE_ENV === 'production', // HTTPS mới cần
+			sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // Bảo mật nhưng linh hoạt
+			httpOnly: true // Cookie chỉ được backend truy cập
+		},
+		store: MongoStore.create({
+			mongoUrl: env.MONGODB_CONNECTION_STRING
+		})
+	})
+);
+
 const allowedOrigins = [env.FRONTEND_URL];
 
 app.use(
 	cors({
-		origin: function (origin, callback) {
-			// allow requests with no origin
-			// (like mobile apps or curl requests)
-			if (!origin) return callback(null, true);
-			if (allowedOrigins.indexOf(origin) === -1) {
-				const msg =
-					'The CORS policy for this site does not allow access from the specified Origin.';
-				return callback(new Error(msg), false);
-			}
-			return callback(null, true);
-		}
+		origin: allowedOrigins, // Đảm bảo cho phép origin frontend
+		credentials: true // Cho phép cookies được gửi qua CORS
 	})
 );
 
@@ -36,20 +45,20 @@ app.use(morgan('dev'));
 app.use(express.json());
 
 //Session (use for login)
-app.use(
-	session({
-		secret: env.SESSION_SECRET,
-		resave: false,
-		saveUninitialized: false,
-		cookie: {
-			maxAge: 60 * 60 * 1000
-		},
-		rolling: true,
-		store: MongoStore.create({
-			mongoUrl: env.MONGODB_CONNECTION_STRING
-		})
-	})
-);
+// app.use(
+// 	session({
+// 		secret: env.SESSION_SECRET,
+// 		resave: false,
+// 		saveUninitialized: false,
+// 		cookie: {
+// 			maxAge: 60 * 60 * 1000
+// 		},
+// 		rolling: true,
+// 		store: MongoStore.create({
+// 			mongoUrl: env.MONGODB_CONNECTION_STRING
+// 		})
+// 	})
+// );
 
 app.get('/', (req, res) => {
 	res.json({
