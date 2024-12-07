@@ -5,5 +5,6 @@ export default cleanEnv(process.env, {
 	PORT: port(),
 	SESSION_SECRET: str(),
 	EMAIL_USER: str(),
-	EMAIL_PASS: str()
+	EMAIL_PASS: str(),
+	FRONTEND_URL: str()
 });

@@ -9,8 +9,18 @@ import ListRouter from './routes/lists';
 import session from 'express-session';
 import { requireAuth } from './middlewares/auth';
 import { ErrorCode } from './types/ErrorCode';
+import cors from 'cors';
 
-const app = express();
+const app = express(); // khai báo app
+
+const allowedOrigins = ['http://localhost:5173', env.FRONTEND_URL];
+
+app.use(
+	cors({
+		origin: allowedOrigins,
+		credentials: true // Nếu bạn sử dụng cookies hoặc headers với thông tin nhạy cảm
+	})
+);
 
 //Middlewares
 app.use(morgan('dev'));

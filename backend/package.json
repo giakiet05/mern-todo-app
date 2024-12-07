@@ -11,9 +11,11 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@types/cors": "^2.8.17",
 		"@vercel/node": "^3.2.23",
 		"bcrypt": "^5.1.1",
 		"connect-mongo": "^5.1.0",
+		"cors": "^2.8.5",
 		"dotenv": "^16.4.5",
 		"envalid": "^8.0.0",
 		"express": "^4.19.2",
