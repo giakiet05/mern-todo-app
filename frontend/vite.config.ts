@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
 		server: {
 			proxy: {
 				'/api': {
-					target: 'https://mern-todo-app-backend-ta4u.onrender.com/' // Use env variable with a fallback
+					target: 'https://mern-todo-app-backend-ta4u.onrender.com' // Use env variable with a fallback
 				}
 			}
 		}
