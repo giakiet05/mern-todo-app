@@ -14,38 +14,38 @@ import cors from 'cors';
 const app = express(); // khai báo app
 console.log(process.env.NODE_ENV || 'Không có cái này nha');
 
-// app.use(
-// 	session({
-// 		secret: env.SESSION_SECRET,
-// 		resave: false,
-// 		saveUninitialized: false,
-// 		rolling: true, // Đặt lại thời gian hết hạn session mỗi khi có hoạt động
-// 		cookie: {
-// 			maxAge: 60 * 60 * 1000, // 1 giờ
-// 			secure: false, // Không bắt buộc HTTPS
-// 			sameSite: 'lax', // Linh hoạt, hỗ trợ cả frontend và backend
-// 			httpOnly: true // Cookie chỉ được backend truy cập
-// 		},
-// 		store: MongoStore.create({
-// 			mongoUrl: env.MONGODB_CONNECTION_STRING
-// 		})
-// 	})
-// );
-
 app.use(
 	session({
 		secret: env.SESSION_SECRET,
 		resave: false,
 		saveUninitialized: false,
+		rolling: true, // Đặt lại thời gian hết hạn session mỗi khi có hoạt động
 		cookie: {
-			maxAge: 60 * 60 * 1000
+			maxAge: 60 * 60 * 1000, // 1 giờ
+			secure: true, // Không bắt buộc HTTPS
+			sameSite: 'lax', // Linh hoạt, hỗ trợ cả frontend và backend
+			httpOnly: true // Cookie chỉ được backend truy cập
 		},
-		rolling: true,
 		store: MongoStore.create({
 			mongoUrl: env.MONGODB_CONNECTION_STRING
 		})
 	})
 );
+
+// app.use(
+// 	session({
+// 		secret: env.SESSION_SECRET,
+// 		resave: false,
+// 		saveUninitialized: false,
+// 		cookie: {
+// 			maxAge: 60 * 60 * 1000
+// 		},
+// 		rolling: true,
+// 		store: MongoStore.create({
+// 			mongoUrl: env.MONGODB_CONNECTION_STRING
+// 		})
+// 	})
+// );
 
 app.use(
 	cors({
