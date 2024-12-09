@@ -82,7 +82,6 @@ export default function HomePageLoggedInView() {
 
 	async function loadSearchedTasks(query: string) {
 		try {
-			setLoading(true);
 			const searchedTasks = await TaskApi.searchTasks(query);
 			setCurrentList(null);
 			setShowImportantList(false);
@@ -90,8 +89,6 @@ export default function HomePageLoggedInView() {
 		} catch (error) {
 			setShowLoadingError(true);
 			console.log(error);
-		} finally {
-			setLoading(false);
 		}
 	}
 

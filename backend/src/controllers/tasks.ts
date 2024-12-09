@@ -3,6 +3,7 @@ import Task from '../models/task';
 import mongoose from 'mongoose';
 import createHttpError from 'http-errors';
 import assertIsDefined from '../utils/assertIsDefined';
+import removeDiacritics from '../utils/removeDiacritics';
 
 interface TaskBody {
 	task: string;
@@ -50,6 +51,7 @@ export const getTasks: RequestHandler = async (req, res, next) => {
 export const searchTasks: RequestHandler = async (req, res, next) => {
 	const authenticatedUserId = req.session.userId;
 	const searchQuery = req.query.q as string;
+
 	try {
 		assertIsDefined(authenticatedUserId);
 
@@ -57,9 +59,11 @@ export const searchTasks: RequestHandler = async (req, res, next) => {
 			return res.status(200).json([]); // Return an empty array if query is empty
 		}
 
+		const normalizedQuery = removeDiacritics(searchQuery);
+
 		const tasks = await Task.find({
 			userId: authenticatedUserId,
-			task: { $regex: searchQuery, $options: 'i' } // case-insensitive search
+			normalizedTask: { $regex: normalizedQuery, $options: 'i' } // Case-insensitive search
 		});
 
 		res.status(200).json(tasks);

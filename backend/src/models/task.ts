@@ -1,11 +1,14 @@
 import mongoose from 'mongoose';
-
+import removeDiacritics from '../utils/removeDiacritics';
 const taskSchema = new mongoose.Schema(
 	{
 		task: {
 			type: String,
 			required: true
 		},
+		normalizedTask: {
+			type: String
+		}, // Diacritic-free version
 		note: {
 			type: String
 		},
@@ -35,6 +38,11 @@ const taskSchema = new mongoose.Schema(
 	},
 	{ timestamps: true }
 );
+
+taskSchema.pre('save', function (next) {
+	this.normalizedTask = removeDiacritics(this.task);
+	next();
+});
 
 type Task = mongoose.InferSchemaType<typeof taskSchema>;
 export default mongoose.model<Task>('Task', taskSchema);
