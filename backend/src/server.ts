@@ -10,7 +10,7 @@ mongoose
 		console.log('Connected to Mongoose successfully');
 		app.listen(port, () => {
 			console.log('Server run on port ' + port);
-			console.log('Frontend is ' + env.FRONTEND_URL);
+			console.log('Frontend URL is ' + env.FRONTEND_URL);
 		});
 	})
 	.catch(console.error);

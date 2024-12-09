@@ -31,7 +31,6 @@ export default function EnterEmailModal({
 		try {
 			//await UserApi.checkExistingUser(input.email);
 			await UserApi.sendOtp(input.email);
-			console.log('hello');
 			onOtpSent(input.email);
 		} catch (error) {
 			const customError = error as CustomError;

@@ -130,3 +130,8 @@ export async function sendOtp(email: string) {
 
 	return response.json();
 }
+
+export async function validateSession() {
+	const response = await fetchData('/api/users/validate-session');
+	return response.json();
+}

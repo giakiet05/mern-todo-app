@@ -11,8 +11,6 @@ import * as TaskApi from '../network/taskApi';
 import Task from '../models/task';
 import WelcomeView from './WelcomeView';
 import { Spinner } from 'react-bootstrap';
-import { Route, Routes, useNavigate } from 'react-router';
-import NotFoundPage from '../pages/NotFoundPage';
 
 export enum FilterType {
 	All = 'All',
@@ -39,7 +37,7 @@ export default function HomePageLoggedInView() {
 	const [showLoadingError, setShowLoadingError] = useState(false);
 	const [listType, setListType] = useState<ListType>(ListType.normal);
 
-	const navigate = useNavigate();
+	//const navigate = useNavigate();
 
 	async function loadCurrentList(listId: string) {
 		try {
@@ -107,7 +105,7 @@ export default function HomePageLoggedInView() {
 
 	function getCurrentListId() {
 		const listId = localStorage.getItem('CURRENT_LIST'); // Get the list ID from localStorage
-		return listId ? listId : undefined; // Return the list ID or undefined if it doesn't exist
+		return listId ?? undefined; // Return the list ID or undefined if it doesn't exist
 	}
 
 	useEffect(() => {
@@ -122,10 +120,7 @@ export default function HomePageLoggedInView() {
 					getCurrentListId() || (lists.length > 0 ? lists[0]._id : null);
 
 				// Load the current list only if a valid ID is found
-				if (currentListId) {
-					navigate(`/${currentListId}`);
-					await loadCurrentList(currentListId);
-				} else navigate('/');
+				if (currentListId) await loadCurrentList(currentListId);
 			} catch (error) {
 				alert(error);
 				console.log(error);
@@ -147,7 +142,7 @@ export default function HomePageLoggedInView() {
 			const currentListId = getCurrentListId();
 			if (currentListId === listId) deleteCurrentListId();
 			await ListApi.deleteList(listId);
-			if (listId === currentList?._id) navigate('/');
+			if (listId === currentList?._id) setCurrentList(null);
 		} catch (error) {
 			alert(error);
 			console.log(error);
@@ -349,30 +344,30 @@ export default function HomePageLoggedInView() {
 					</p>
 				)}
 				{!loading && !showLoadingError && (
-					<Routes>
-						<Route index element={<WelcomeView />} />
-						<Route
-							path="/:id"
-							element={
-								<ListContainer
-									list={currentList}
-									tasks={filterTasks(currentTasks)}
-									filterType={filterType}
-									listType={listType}
-									onChecked={handleChecked}
-									onSwitchIsImportant={handleSwitchIsImportant}
-									onTaskClicked={handleTaskClicked}
-									onDeleteListBtnClicked={handleDeleteList}
-									onRenameListBtnClicked={setListToEdit}
-									onCheckAllTasksBtnClicked={handleCheckAllTasks}
-									onDeleteAllTasksBtnClicked={handleDeleteAllTasks}
-									onFilterClicked={setFilterType}
-									onTaskCreated={handleTaskCreated}
-								/>
-							}
-						/>
-						<Route path="*" element={<NotFoundPage />} />
-					</Routes>
+					<>
+						{/* If currentList is null (3 case: in search list, in important list or not in any list), then check for listtype, if it is null, render welcomeview */}
+						{currentList ||
+						listType === ListType.important ||
+						listType === ListType.search ? (
+							<ListContainer
+								list={currentList}
+								tasks={filterTasks(currentTasks)}
+								filterType={filterType}
+								listType={listType}
+								onChecked={handleChecked}
+								onSwitchIsImportant={handleSwitchIsImportant}
+								onTaskClicked={handleTaskClicked}
+								onDeleteListBtnClicked={handleDeleteList}
+								onRenameListBtnClicked={setListToEdit}
+								onCheckAllTasksBtnClicked={handleCheckAllTasks}
+								onDeleteAllTasksBtnClicked={handleDeleteAllTasks}
+								onFilterClicked={setFilterType}
+								onTaskCreated={handleTaskCreated}
+							/>
+						) : (
+							<WelcomeView />
+						)}
+					</>
 				)}
 			</div>
 
@@ -383,7 +378,7 @@ export default function HomePageLoggedInView() {
 						setShowAddListModal(false);
 						setLists((prev) => [...prev, newList]);
 						loadCurrentList(newList._id);
-						navigate(`/${newList?._id}`);
+						//navigate(`/${newList?._id}`);
 					}}
 				/>
 			)}
@@ -400,7 +395,7 @@ export default function HomePageLoggedInView() {
 							)
 						);
 						loadCurrentList(updatedList._id);
-						navigate(`/${updatedList?._id}`);
+						//navigate(`/${updatedList?._id}`);
 					}}
 					listToEdit={listToEdit}
 				/>

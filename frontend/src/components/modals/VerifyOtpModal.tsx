@@ -46,7 +46,7 @@ export default function VerifyOtpModal({
 			email: email,
 			otp: input.otp
 		};
-		console.log(credentials);
+
 		try {
 			if (action === OtpRequiredAction.activateUser)
 				await UserApi.activateUser(credentials);

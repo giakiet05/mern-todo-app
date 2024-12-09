@@ -261,9 +261,8 @@ export const logIn: RequestHandler<
 					'Your account is not activated. Please check your email to activate your account before logging in',
 				code: ErrorCode.ACCOUNT_NOT_ACTIVATED
 			});
-		console.log('trước khi gán cho session' + user._id);
+
 		req.session.userId = user._id;
-		console.log('sau khi gán cho session' + req.session.userId);
 
 		res.status(200).json(user);
 	} catch (error) {
@@ -393,6 +392,16 @@ export const resetPassword: RequestHandler<
 		await user.save();
 
 		res.status(200).json({ message: 'Password has been reset successfully!' });
+	} catch (error) {
+		next(error);
+	}
+};
+
+export const validateSession: RequestHandler = async (req, res, next) => {
+	try {
+		if (req.session && req.session.userId)
+			return res.status(200).json({ valid: true });
+		else return res.status(200).json({ valid: false });
 	} catch (error) {
 		next(error);
 	}

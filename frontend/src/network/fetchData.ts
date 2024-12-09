@@ -6,7 +6,7 @@ export default async function fetchData(
 ) {
 	const baseUrl: string =
 		import.meta.env.VITE_API_URL || 'http://localhost:5000';
-	console.log(baseUrl);
+
 	if (!baseUrl) {
 		throw new Error(
 			'API url (VITE_API_URL) is not defined in environment variables.'

@@ -1,7 +1,6 @@
 import { Dropdown, ListGroup } from 'react-bootstrap';
 import { FaBars, FaEllipsisV } from 'react-icons/fa';
 import List from '../models/list';
-import { Link } from 'react-router-dom';
 import { ListType } from './HomePageLoggedInView';
 
 interface ListItemProps {
@@ -23,8 +22,8 @@ export default function ListItem({
 }: ListItemProps) {
 	return (
 		<ListGroup.Item
-			as={Link}
-			to={`/${list._id}`}
+			//as={Link}
+			//to={`/${list._id}`}
 			action
 			className="d-flex align-items-center"
 			onClick={() => {

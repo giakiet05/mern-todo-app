@@ -39,6 +39,30 @@ export default function App() {
 		getLoggedInUser();
 	}, []);
 
+	useEffect(() => {
+		if (!loggedInUser) {
+			return; // Skip session validation if the user is not logged in
+		}
+
+		async function validateSession() {
+			try {
+				const response = await UserApi.validateSession();
+				console.log(response);
+				if (!response.valid) {
+					await UserApi.logOut();
+					setLoggedInUser(null);
+					alert('Your session has expired. Please log in again.');
+				}
+			} catch (error) {
+				console.error('Error validating session:', error);
+			}
+		}
+
+		const interval = setInterval(validateSession, 5 * 60 * 1000); // Check every 5 minutes
+
+		return () => clearInterval(interval); // Cleanup on component unmount
+	}, [loggedInUser]);
+
 	return (
 		<div className="app">
 			<NavBar
@@ -126,7 +150,6 @@ export default function App() {
 					setErrorMessage={setErrorMessage}
 					action={OtpRequiredAction.verifyForResetPassword}
 					onResendClicked={async () => {
-						console.log(emailToVerify);
 						await UserApi.sendOtp(emailToVerify);
 					}}
 				/>
@@ -156,20 +179,6 @@ export default function App() {
 					}}
 				/>
 			)}
-			{/* {showConfirmOtpSend && (
-				<ConfirmModal
-					title="Send OTP"
-					description="A 6-digit OTP will be sent to your email, please use it to complete the verification"
-					confirmBtnContent="Send"
-					confirmBtnType={BsVariant.primary}
-					onDismiss={() => setShowConfirmOtpSend(false)}
-					onConfirmed={async () => {
-						await UserApi.sendOtp('giakiet05@gmail.com');
-						setShowConfirmOtpSend(false);
-						setShowVerifyOtpModal(true);
-					}}
-				/>
-			)} */}
 		</div>
 	);
 }
